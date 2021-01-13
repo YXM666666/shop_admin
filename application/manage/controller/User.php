@@ -10,7 +10,8 @@ use think\facade\Request;
 
 class User extends BaseController
 {
-    protected $middleware = ['ApiLogMiddleware','ApiAuthMiddleware'];
+    protected $middleware = ['ApiLogMiddleware', 'ApiAuthMiddleware'];
+
     public function reg()
     {
         $data = $this->request->post();
@@ -42,87 +43,106 @@ class User extends BaseController
         }
 
         return $this->resSuccess([
-                'id' => Db::name('tp_user')->getLastInsID(),
-                'username' => $data['username'],
-                'phone' => $data['phone'],
-                'email' => $data['email'],
-                'role_id' => $data['role_id']],
-                 '注册成功');
+            'id' => Db::name('tp_user')->getLastInsID(),
+            'username' => $data['username'],
+            'phone' => $data['phone'],
+            'email' => $data['email'],
+            'role_id' => $data['role_id']],
+            '注册成功');
 
     }
 
-public function login()
-{
-    $data = $this->request->post();
-
-    $valdate = new \app\index\validate\User();
-
-    if(!$valdate->scene('login')->batch()->check($data)){
-        return $this->resFail($valdate->getError());
-    }
-    try {
-        $user = Db::name('tp_user')
-            ->field('id,username,phone,email,password,is_del')
-            ->where('username', $data['username'])
-            ->find();
-        if ($user['username'] != $data['username']) {
-            return $this->resFail('请您输入正确的账号或密码');
-
-        }
-        if (password_verify($data['password'], $user['password'])) {
-            $token=(md5($data['username'].time()));
-            $data1 = [
-                'user_id' => $user['id'],
-                'token' => $token
-            ];
-            Db::name('tp_user_log')->insert($data1);
-
-            $user['token'] = $token;
-            unset($user['password']);
-
-            return $this->resSuccess($user, '登录成功');
-        } else {
-            return $this->resFail('请您输入正确的账号或密码');
-        }
-
-    } catch (\Exception $e) {
-        return $this->resFail('数据异常' . $e->getMessage());
-    }
-}
-    public function update(){
-        $token = Request::header('token','');
+    public function login()
+    {
         $data = $this->request->post();
 
+        $valdate = new \app\index\validate\User();
+
+        if (!$valdate->scene('login')->batch()->check($data)) {
+            return $this->resFail($valdate->getError());
+        }
+        try {
+            $user = Db::name('tp_user')
+                ->field('id,username,phone,email,password,is_del')
+                ->where('username', $data['username'])
+                ->find();
+            if ($user['username'] != $data['username']) {
+                return $this->resFail('请您输入正确的账号或密码');
+
+            }
+            if (password_verify($data['password'], $user['password'])) {
+                $token = (md5($data['username'] . time()));
+                $data1 = [
+                    'user_id' => $user['id'],
+                    'token' => $token
+                ];
+                Db::name('tp_user_log')->insert($data1);
+
+                $user['token'] = $token;
+                unset($user['password']);
+
+                return $this->resSuccess($user, '登录成功');
+            } else {
+                return $this->resFail('请您输入正确的账号或密码');
+            }
+
+        } catch (\Exception $e) {
+            return $this->resFail('数据异常' . $e->getMessage());
+        }
+    }
+
+    public function update()
+    {
+        $token = Request::header('token', '');
+        $data = $this->request->post();
 
         $valdate = new \app\index\validate\Check();
 
-        if(!$valdate->scene('updata')->batch()->check($data)){
+        if (!$valdate->scene('updata')->batch()->check($data)) {
             return ($valdate->getError());
         }
+
+        $update = [];
+
+        if (!empty($data['email'])){
+            $update['email'] = $data['email'];
+        }
+        if (!empty($data['phone'])){
+            $update['phone'] = $data['phone'];
+        }
+        if (!empty($data['role_id'])){
+            $update['role_id'] = $data['role_id'];
+        }
+
         try {
             $user = Db::name('tp_user_log')
-                ->where('token',$token)
+                ->field('user_id')
+                ->where('token', $token)
                 ->find();
 
-            if ($user['user_id']!=$data['id']){
-                return $this->resFail('请输入正确的id','1');
+            if ($user['user_id'] != $data['id']) {
+                return $this->resFail('请输入正确的id', '1');
             }
 
-            Db::name('tp_user')->update($data);
+            Db::name('tp_user')
+                ->where('id','=',$data['id'])
+                ->update($update);
 
-            return $this->resSuccess($user, '修改成功');
+
+            return $this->resSuccess($data, '修改成功');
 
 
         } catch (\Exception $e) {
             return $this->resFail('数据异常' . $e->getMessage());
         }
-
     }
 
+//    public function
 
-public function select(){
+    public function select()
+    {
 
 
-}
+    }
 
 }
