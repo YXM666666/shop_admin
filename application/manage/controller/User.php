@@ -9,6 +9,8 @@ use think\Db;
 
 class User extends BaseController
 {
+//    protected $middleware = ['ApiAuthMiddleware'];
+    protected $middleware = ['ApiLogMiddleware'];
     public function reg()
     {
         $data = $this->request->post();
@@ -44,7 +46,8 @@ class User extends BaseController
                 'username' => $data['username'],
                 'phone' => $data['phone'],
                 'email' => $data['email'],
-                'role_id' => $data['role_id']], '注册成功');
+                'role_id' => $data['role_id']],
+                 '注册成功');
 
     }
 
@@ -86,6 +89,37 @@ public function login()
         return $this->resFail('数据异常' . $e->getMessage());
     }
 }
+    public function update(){
+        $data = $this->request->post();
 
+
+        $valdate = new \app\index\validate\Check();
+
+        if(!$valdate->scene('updata')->batch()->check($data)){
+            return ($valdate->getError());
+        }
+        try {
+            $user = Db::name('tp_user')
+                ->where('id' ,'=',$data['id'])
+                ->find();
+
+            if (empty($user)){
+                return $this->resFail('请输入正确的id','1');
+            }
+
+            Db::name('tp_user')->update($data);
+
+            return $this->resSuccess($user, '修改成功');
+
+
+        } catch (\Exception $e) {
+            return $this->resFail('数据异常' . $e->getMessage());
+        }
+
+    }
+public function select(){
+
+
+}
 
 }

@@ -27,6 +27,8 @@ Route::any('test', function () {
 Route::post('reg', 'User/reg');
 
 Route::post('login', 'User/login');
+
+Route::post('update', 'User/update');
 return [
 
 ];
