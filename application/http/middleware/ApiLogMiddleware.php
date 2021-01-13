@@ -4,14 +4,13 @@ namespace app\http\middleware;
 
 use think\Db;
 use think\facade\Request;
-use app\index\model\Profile;
 class ApiLogMiddleware
 {
     public function handle($request, \Closure $next)
     {
         $url    = Request::baseUrl(); // 获取请求的url
         $params = Request::param();
-        $token  = Request::header('token', '');
+        $token = Request::header('token', '');
 
         if (empty($token)) {
             $user_id = -1;

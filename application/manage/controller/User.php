@@ -9,8 +9,7 @@ use think\Db;
 
 class User extends BaseController
 {
-//    protected $middleware = ['ApiAuthMiddleware'];
-    protected $middleware = ['ApiLogMiddleware'];
+    protected $middleware = ['ApiLogMiddleware','ApiAuthMiddleware'];
     public function reg()
     {
         $data = $this->request->post();
