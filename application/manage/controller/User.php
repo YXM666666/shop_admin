@@ -10,7 +10,7 @@ use think\facade\Request;
 
 class User extends BaseController
 {
-    protected $middleware = ['ApiLogMiddleware', 'ApiAuthMiddleware'];
+//    protected $middleware = ['ApiLogMiddleware', 'ApiAuthMiddleware'];
 
     public function reg()
     {
@@ -47,7 +47,8 @@ class User extends BaseController
             'username' => $data['username'],
             'phone' => $data['phone'],
             'email' => $data['email'],
-            'role_id' => $data['role_id']],
+            'role_id' => $data['role_id'],
+            'create_time'=>date('Y-m-d H:i:s')],
             '注册成功');
 
     }
@@ -69,6 +70,9 @@ class User extends BaseController
             if ($user['username'] != $data['username']) {
                 return $this->resFail('请您输入正确的账号或密码');
 
+            }
+            if($user['is_del']==1){
+                return $this->resFail('您已被删除');
             }
             if (password_verify($data['password'], $user['password'])) {
                 $token = (md5($data['username'] . time()));
@@ -128,6 +132,7 @@ class User extends BaseController
                 ->where('id','=',$data['id'])
                 ->update($update);
 
+            $data['create_time']=date('Y-m-d H:i:s');
 
             return $this->resSuccess($data, '修改成功');
 
@@ -137,7 +142,39 @@ class User extends BaseController
         }
     }
 
-//    public function
+    public function getUserlist(){
+        $page_num = $this->request->post('page_num', '1');
+        $page_size = $this->request->post('start_time', '10');
+        $data = $this->request->post();
+
+        $valdate = new \app\index\validate\Check();
+
+        if (!$valdate->scene('getUserlist')->batch()->check($data)) {
+            return ($valdate->getError());
+        }
+        $condition = [];
+        if (!empty($data['username'])) {
+            $condition[] = ['username', 'like', "%{$data['username']}%"];
+        }
+        if (!empty($data['email'])) {
+            $condition[] = ['email', 'like', "%{$data['email']}%"];
+        }
+        if (!empty($data['phone'])) {
+            $condition['phone'] = $data['phone'];
+        }
+        try {
+            $user = Db::name('tp_user')
+                ->where($condition)
+                ->limit($page_num,$page_size)
+                ->select();
+
+            return $this->resSuccess($user, '查询成功');
+
+
+        } catch (\Exception $e) {
+            return $this->resFail('数据异常' . $e->getMessage());
+        }
+    }
 
     public function select()
     {
