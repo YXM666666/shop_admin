@@ -176,6 +176,36 @@ class User extends BaseController
         }
     }
 
+    public function deleteUser(){
+        $data = $this->request->post();
+        $token = Request::header('token', '');
+        $valdate = new \app\index\validate\Check();
+
+        if (!$valdate->scene('deleteUser')->batch()->check($data)) {
+            return ($valdate->getError());
+        }
+        try {
+           $user = Db::name('tp_user_log')
+            ->field('user_id')
+            ->where('token',$token)
+            ->find();
+
+            if ($user['user_id']==$data['id']){
+                return $this->resFail('您不能删除自己', '1');
+            }
+
+            Db::name('tp_user')
+                ->where('id',$data['id'])
+                ->setField('is_del','1');
+
+            return $this->resSuccess([], '删除成功');
+
+        } catch (\Exception $e) {
+            return $this->resFail('数据异常' . $e->getMessage());
+        }
+
+    }
+
     public function select()
     {
 

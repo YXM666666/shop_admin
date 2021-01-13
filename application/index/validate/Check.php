@@ -26,7 +26,8 @@ class Check extends Validate
         'reg'=>['username','email','phone','password','role_id'],
         'login'=>['username','password'],
         'updata'=>['phone','email','id','role_id'],
-        'getUserlist'=>['phone','email','page_num','page_size']
+        'getUserlist'=>['phone','email','page_num','page_size'],
+        'deleteUser'=>['id']
     ];
     protected $message = [];
 }
