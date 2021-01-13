@@ -39,7 +39,7 @@ class ApiAuthMiddleware
             return $this->response(10001, '您没有登录');
         }
 
-        if (date('Y-m-d H:i:s', time() - 24 * 60 * 60) > $user['CREATE_time']) {
+        if (date('Y-m-d H:i:s', time() - 24 * 60 * 60) > $user['create_time']) {
             return $this->response(10002, '您的登录时间已经过期，请重新登录');
         }
 
@@ -52,14 +52,14 @@ class ApiAuthMiddleware
             ->find();//tp_user_api表的api_id
 
         if (!$res){
-           $role_api= Db::name('tp_role_api ra')
+           $res= Db::name('tp_role_api ra')
            ->leftJoin('tp_api a ','ra.api_id=a.id')
            ->leftJoin('tp_user u','ra.role_id=u.role_id')
            ->where('a.path','=',$url)
            ->where('u.id','=',$user['user_id'])
            ->find();
         }
-        if(is_null($res) && is_null($role_api)){
+        if(is_null($res) ){
             return $this->response(10003, '您没有权限');
         }
         return $next($request);//返回rensponse 对象
