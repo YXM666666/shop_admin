@@ -6,6 +6,7 @@ namespace app\manage\controller;
 
 use app\index\controller\BaseController;
 use think\Db;
+use think\facade\Request;
 
 class User extends BaseController
 {
@@ -89,6 +90,7 @@ public function login()
     }
 }
     public function update(){
+        $token = Request::header('token','');
         $data = $this->request->post();
 
 
@@ -98,10 +100,10 @@ public function login()
             return ($valdate->getError());
         }
         try {
-            $user = Db::name('tp_user')
-                ->where('id' ,'=',$data['id'])
+            $user = Db::name('tp_user_log')
+                ->where('token',$token)
                 ->find();
-
+            var_dump( $token);
             if (empty($user)){
                 return $this->resFail('请输入正确的id','1');
             }
