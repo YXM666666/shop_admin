@@ -103,8 +103,8 @@ public function login()
             $user = Db::name('tp_user_log')
                 ->where('token',$token)
                 ->find();
-            var_dump( $token);
-            if (empty($user)){
+
+            if ($user['user_id']!=$data['id']){
                 return $this->resFail('请输入正确的id','1');
             }
 
@@ -118,6 +118,8 @@ public function login()
         }
 
     }
+
+
 public function select(){
 
 
