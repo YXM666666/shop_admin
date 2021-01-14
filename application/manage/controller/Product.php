@@ -62,5 +62,35 @@ public function addProduct(){
         }
 }
 
+public function updateProduct(){
+    $data = $this->request->post();
+    $valdate = new validate\User();
+    if (!$valdate->batch()->scene('updateProduct')->check($data)) {
+        return $this->resFail($valdate->getError());
+    }
+    $update = [];
+
+    if (!empty($data['category_id'])){
+        $update['category_id'] = $data['category_id'];
+    }
+    if (!empty($data['name'])){
+        $update['name'] = $data['name'];
+    }
+    if (!empty($data['price'])){
+        $update['price'] = $data['price'];
+    }
+    if (!empty($data['desc'])){
+        $update['desc'] = $data['desc'];
+    }
+    try {
+        Db::name('tp_product')
+            ->where('id','=',$data['id'])
+            ->update($update);
+        return $this->resSuccess([], '更新成功');
+    }catch (\Exception $e) {
+        return $this->resFail('数据异常' . $e->getMessage());
+    }
+}
+
 
 }

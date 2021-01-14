@@ -23,7 +23,7 @@ class Check extends Validate
         'page_num|分几页' =>  'number',
         'p_id|父类id' => 'require|number',
         'category_name|商品名' => 'require',
-        'category_id|在分类表的id' => 'require',
+        'category_id|在分类表的id' => 'require|number',
         'name|商品名' =>'require',
         'price|商品价格' => 'number|require'
 
