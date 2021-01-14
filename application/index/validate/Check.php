@@ -44,7 +44,8 @@ class Check extends Validate
         'addProduct'=>['category_id','name','price'],
         'updateProductStatus'=>['id','is_sale'],
         'deleteProduct'=>['id'],
-        'addRole'=>['role_name']
+        'addRole'=>['role_name'],
+        'deleteRole'=>['id']
     ];
     protected $message = [];
 }
