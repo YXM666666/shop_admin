@@ -91,4 +91,28 @@ class Category extends BaseController
             return $this->resFail('数据异常' . $e->getMessage());
         }
     }
+    public function getCategoryInfo(){
+        $data = $this->request->post();
+        $valdate = new validate\Check();
+        if (!$valdate->batch()->scene('getCategoryInfo')->check($data)) {
+            return $this->resFail($valdate->getError());
+        }
+
+        try {
+            $result = Db::name('tp_category')
+                ->field('id,p_id,name')
+                ->where('is_del','=',0)
+                ->where('id',$data['category_id'])
+                ->find();
+            if (!empty($result)) {
+                return $this->resSuccess($result, '查询成功');
+            }else{
+                return $this->resFail('没有此商品',1);
+            }
+        }catch (\Exception $e){
+            return $this->resFail('数据异常' . $e->getMessage());
+        }
+    }
+
+
 }
