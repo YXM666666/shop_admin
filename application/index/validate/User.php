@@ -14,7 +14,7 @@ class User extends Validate
      */	
 	protected $rule = [
         'id|用户ID'              =>    'require|number',
-        'username|用户名'  =>    'string',
+        'username|用户名'  =>    'require',
         'email|邮件'      =>     'email',
         'phone|手机号'    =>    'mobile',
         'password|密码'    =>    'require|alphaNum',

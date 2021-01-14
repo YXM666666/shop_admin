@@ -95,7 +95,8 @@ class User extends BaseController
         }
     }
 
-    public function update()
+
+    public function update($q=10)
     {
         $token = Request::header('token', '');
         $data = $this->request->post();
@@ -120,7 +121,7 @@ class User extends BaseController
 
         try {
             $user = Db::name('tp_user_log')
-                ->field('user_id')
+                ->field('user_id,create_time')
                 ->where('token', $token)
                 ->find();
 
@@ -132,7 +133,7 @@ class User extends BaseController
                 ->where('id','=',$data['id'])
                 ->update($update);
 
-            $data['create_time']=date('Y-m-d H:i:s');
+            $data['create_time']=$user['create_time'];
 
             return $this->resSuccess($data, '修改成功');
 
@@ -165,6 +166,8 @@ class User extends BaseController
         try {
             $user = Db::name('tp_user')
                 ->where($condition)
+                ->field('password',true)
+                ->where('is_del','=',0)
                 ->page($page_num,$page_size)
                 ->select();
 
