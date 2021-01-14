@@ -52,4 +52,25 @@ class Category extends BaseController
             return $this->resFail('数据异常' . $e->getMessage());
         }
     }
+
+    /**
+     * @return array
+     */
+    public function addCategory(){
+        $data = $this->request->post();
+        $valdate = new validate\Check();
+        if (!$valdate->batch()->scene('addCategory')->check($data)) {
+            return $this->resFail($valdate->getError());
+        }
+        $data['name'] = $data['category_name'];
+        unset( $data['category_name']);
+        try {
+            Db::name('tp_category')
+                ->where('p_id', '=', $data['p_id'])
+                ->insert($data);
+            return $this->resSuccess([],'插入成功');
+        }catch (\Exception $e){
+            return $this->resFail('数据异常' . $e->getMessage());
+        }
+    }
 }

@@ -21,7 +21,8 @@ class Check extends Validate
         'role_id|角色id'  =>      'number|length:1',
         'page_size|每页多少行' =>  'number',
         'page_num|分几页' =>  'number',
-        'p_id|父类id' => 'number'
+        'p_id|父类id' => 'require|number',
+        'category_name' => 'require'
     ];
     protected $scene = [
         'reg'=>['username','email','phone','password','role_id'],
@@ -29,7 +30,8 @@ class Check extends Validate
         'updata'=>['phone','email','id','role_id'],
         'getUserlist'=>['phone','email','page_num','page_size'],
         'deleteUser'=>['id'],
-        'getCategoryList'=>['p_id','page_num','page_size']
+        'getCategoryList'=>['p_id','page_num','page_size'],
+        'addCategory'=>['p_id','category_name']
     ];
     protected $message = [];
 }
