@@ -26,7 +26,8 @@ class Check extends Validate
         'category_id|在分类表的id' => 'require|number',
         'name|商品名' =>'require',
         'price|商品价格' => 'number|require',
-        'is_sale|商品上架' => 'bool|require'
+        'is_sale|商品上架' => 'bool|require',
+        'role_name|角色名称' => 'require'
 
     ];
     protected $scene = [
@@ -42,7 +43,8 @@ class Check extends Validate
         'getProductList'=>['page_num','page_size'],
         'addProduct'=>['category_id','name','price'],
         'updateProductStatus'=>['id','is_sale'],
-        'deleteProduct'=>['id']
+        'deleteProduct'=>['id'],
+        'addRole'=>['role_name']
     ];
     protected $message = [];
 }
