@@ -23,7 +23,8 @@ class Check extends Validate
         'page_num|分几页' =>  'number',
         'p_id|父类id' => 'require|number',
         'category_name' => 'require',
-        'category_id ' => 'require'
+        'category_id ' => 'require',
+
     ];
     protected $scene = [
         'reg'=>['username','email','phone','password','role_id'],
@@ -34,7 +35,8 @@ class Check extends Validate
         'getCategoryList'=>['p_id','page_num','page_size'],
         'addCategory'=>['p_id','category_name'],
         'updateCategory'=>['id','category_name'],
-        'getCategoryInfo'=>['category_id']
+        'getCategoryInfo'=>['category_id'],
+        'getProductList' => ['page_num','page_size']
     ];
     protected $message = [];
 }

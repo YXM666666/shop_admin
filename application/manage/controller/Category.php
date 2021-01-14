@@ -26,18 +26,10 @@ class Category extends BaseController
             return $this->resFail($valdate->getError());
         }
         try {
-            if ($data['p_id'] == 0) {
-                $p_id = Db::name('tp_category')
-                    ->field('id,p_id,name')
-                    ->where('p_id', '=', '0')
-                    ->limit($page_num, $page_size)
-                    ->select();
-                return $this->resSuccess($p_id, '查询成功');
-            }
                 $p_id = Db::name('tp_category')
                     ->field('id,p_id,name')
                     ->where('p_id', '=', $data['p_id'])
-                    ->limit($page_num, $page_size)
+                    ->page($page_num, $page_size)
                     ->select();
             if (!empty($p_id)) {
                 return $this->resSuccess($p_id, '查询成功');
