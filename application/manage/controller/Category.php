@@ -58,7 +58,6 @@ class Category extends BaseController
         unset( $data['category_name']);
         try {
             Db::name('tp_category')
-                ->where('p_id', '=', $data['p_id'])
                 ->insert($data);
             return $this->resSuccess([],'插入成功');
         }catch (\Exception $e){
