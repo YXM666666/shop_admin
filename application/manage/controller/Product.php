@@ -91,6 +91,20 @@ public function updateProduct(){
         return $this->resFail('数据异常' . $e->getMessage());
     }
 }
+public function updateProductStatus(){
+    $data = $this->request->post();
+    $valdate = new validate\Check();
+    if (!$valdate->batch()->scene('updateProductStatus')->check($data)) {
+        return $this->resFail($valdate->getError());
+    }
+    try {
 
+        Db::name('tp_product')
+            ->update($data);
+        return $this->resSuccess([], '更新成功');
+    }catch (\Exception $e) {
+        return $this->resFail('数据异常' . $e->getMessage());
+    }
+}
 
 }
