@@ -41,7 +41,8 @@ class Check extends Validate
         'getCategoryInfo'=>['category_id'],
         'getProductList'=>['page_num','page_size'],
         'addProduct'=>['category_id','name','price'],
-        'updateProductStatus'=>['id','is_sale']
+        'updateProductStatus'=>['id','is_sale'],
+        'deleteProduct'=>['id']
     ];
     protected $message = [];
 }

@@ -106,5 +106,22 @@ public function updateProductStatus(){
         return $this->resFail('数据异常' . $e->getMessage());
     }
 }
+public function deleteProduct(){
+    $data = $this->request->post();
+    $valdate = new validate\Check();
+    if (!$valdate->batch()->scene('deleteProduct')->check($data)) {
+        return $this->resFail($valdate->getError());
+    }
+
+    try {
+        Db::name('tp_product')
+            ->where('id',$data['id'])
+            ->setField('is_del','1');
+        return $this->resSuccess([], '删除成功');
+    }catch (\Exception $e) {
+        return $this->resFail('数据异常' . $e->getMessage());
+    }
+}
+
 
 }
