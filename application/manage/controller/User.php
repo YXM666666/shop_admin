@@ -165,7 +165,7 @@ class User extends BaseController
         try {
             $user = Db::name('tp_user')
                 ->where($condition)
-                ->limit($page_num,$page_size)
+                ->page($page_num,$page_size)
                 ->select();
 
             return $this->resSuccess($user, '查询成功');

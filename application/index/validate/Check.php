@@ -22,8 +22,10 @@ class Check extends Validate
         'page_size|每页多少行' =>  'number',
         'page_num|分几页' =>  'number',
         'p_id|父类id' => 'require|number',
-        'category_name' => 'require',
-        'category_id ' => 'require',
+        'category_name|商品名' => 'require',
+        'category_id|在分类表的id' => 'require',
+        'name|商品名' =>'require',
+        'price|商品价格' => 'number|require'
 
     ];
     protected $scene = [
@@ -36,7 +38,8 @@ class Check extends Validate
         'addCategory'=>['p_id','category_name'],
         'updateCategory'=>['id','category_name'],
         'getCategoryInfo'=>['category_id'],
-        'getProductList' => ['page_num','page_size']
+        'getProductList'=>['page_num','page_size'],
+        'addProduct'=>['category_id','name','price']
     ];
     protected $message = [];
 }
