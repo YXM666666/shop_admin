@@ -31,7 +31,8 @@ class Check extends Validate
         'getUserlist'=>['phone','email','page_num','page_size'],
         'deleteUser'=>['id'],
         'getCategoryList'=>['p_id','page_num','page_size'],
-        'addCategory'=>['p_id','category_name']
+        'addCategory'=>['p_id','category_name'],
+        'updateCategory'=>['id','category_name']
     ];
     protected $message = [];
 }

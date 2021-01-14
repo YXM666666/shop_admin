@@ -73,4 +73,22 @@ class Category extends BaseController
             return $this->resFail('数据异常' . $e->getMessage());
         }
     }
+
+    public function updateCategory(){
+        $data = $this->request->post();
+        $valdate = new validate\Check();
+        if (!$valdate->batch()->scene('updateCategory')->check($data)) {
+            return $this->resFail($valdate->getError());
+        }
+        $data['name'] = $data['category_name'];
+        unset( $data['category_name']);
+        try {
+            Db::name('tp_category')
+                ->where('id', '=', $data['id'])
+                ->update($data);
+            return $this->resSuccess([],'插入成功');
+        }catch (\Exception $e){
+            return $this->resFail('数据异常' . $e->getMessage());
+        }
+    }
 }
