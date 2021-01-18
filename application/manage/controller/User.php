@@ -5,22 +5,30 @@ namespace app\manage\controller;
 
 
 use app\index\controller\BaseController;
+use app\index\validate\Verification;
 use think\Db;
 use think\facade\Request;
+use app\index\validate\Check;
 
 class User extends BaseController
 {
+    //引入中间件
 //    protected $middleware = ['ApiLogMiddleware', 'ApiAuthMiddleware'];
-
+    /**
+     * 这是一个注册接口
+     * @return array
+     */
     public function reg()
     {
         $data = $this->request->post();
 
-        $valdate = new \app\index\validate\User();
-        if (!$valdate->batch()->scene('reg')->check($data)) {
+        //这是一个验证器
+        $valdate = new Verification();
+        if (!$valdate->scene('reg')->check($data)) {
             return $this->resFail($valdate->getError());
         }
 
+        //把密码加密
         $password = password_hash($data['password'], PASSWORD_DEFAULT);
         $data['password'] = $password;
 
@@ -53,29 +61,34 @@ class User extends BaseController
 
     }
 
+    /**
+     * 这是一个登陆接口
+     * @return array
+     */
     public function login()
     {
         $data = $this->request->post();
 
-        $valdate = new \app\index\validate\User();
+        $valdate = new Verification();
 
-        if (!$valdate->scene('login')->batch()->check($data)) {
+        if (!$valdate->scene('login')->check($data)) {
             return $this->resFail($valdate->getError());
         }
+
         try {
             $user = Db::name('tp_user')
                 ->field('id,username,phone,email,password,is_del')
                 ->where('username', $data['username'])
+                ->where('is_del','=',0)
                 ->find();
             if ($user['username'] != $data['username']) {
                 return $this->resFail('请您输入正确的账号或密码');
 
             }
-            if($user['is_del']==1){
-                return $this->resFail('您已被删除');
-            }
+
             if (password_verify($data['password'], $user['password'])) {
                 $token = (md5($data['username'] . time()));
+
                 $data1 = [
                     'user_id' => $user['id'],
                     'token' => $token
@@ -95,15 +108,18 @@ class User extends BaseController
         }
     }
 
-
-    public function update($q=10)
+    /**
+     * 这是一个用户自我修改接口
+     * @return array
+     */
+    public function update()
     {
         $token = Request::header('token', '');
         $data = $this->request->post();
 
-        $valdate = new \app\index\validate\Check();
+        $valdate = new Check();
 
-        if (!$valdate->scene('updata')->batch()->check($data)) {
+        if (!$valdate->scene('updata')->check($data)) {
             return ($valdate->getError());
         }
 
@@ -112,9 +128,11 @@ class User extends BaseController
         if (!empty($data['email'])){
             $update['email'] = $data['email'];
         }
+
         if (!empty($data['phone'])){
             $update['phone'] = $data['phone'];
         }
+
         if (!empty($data['role_id'])){
             $update['role_id'] = $data['role_id'];
         }
@@ -143,32 +161,40 @@ class User extends BaseController
         }
     }
 
+    /**
+     * 获取所有用户接口
+     * @return array
+     */
     public function getUserlist(){
-        $page_num = $this->request->post('page_num', '1');
-        $page_size = $this->request->post('start_time', '10');
+
         $data = $this->request->post();
 
         $valdate = new \app\index\validate\Check();
 
-        if (!$valdate->scene('getUserlist')->batch()->check($data)) {
+        if (!$valdate->scene('getUserlist')->check($data)) {
             return ($valdate->getError());
         }
+
         $condition = [];
+
         if (!empty($data['username'])) {
             $condition[] = ['username', 'like', "%{$data['username']}%"];
         }
+
         if (!empty($data['email'])) {
             $condition[] = ['email', 'like', "%{$data['email']}%"];
         }
+
         if (!empty($data['phone'])) {
-            $condition['phone'] = $data['phone'];
+            $condition[] = ['phone','=',$data['phone']];
         }
+
         try {
             $user = Db::name('tp_user')
                 ->where($condition)
                 ->field('password',true)
                 ->where('is_del','=',0)
-                ->page($page_num,$page_size)
+                ->page($data['page_num'],$data['page_size'])
                 ->select();
 
             return $this->resSuccess($user, '查询成功');
@@ -179,14 +205,19 @@ class User extends BaseController
         }
     }
 
+    /**
+     * 这是一个删除用户接口，不能删除自己
+     * @return array
+     */
     public function deleteUser(){
         $data = $this->request->post();
         $token = Request::header('token', '');
         $valdate = new \app\index\validate\Check();
 
-        if (!$valdate->scene('deleteUser')->batch()->check($data)) {
+        if (!$valdate->scene('deleteUser')->check($data)) {
             return ($valdate->getError());
         }
+
         try {
            $user = Db::name('tp_user_log')
             ->field('user_id')
@@ -199,7 +230,7 @@ class User extends BaseController
 
             Db::name('tp_user')
                 ->where('id',$data['id'])
-                ->setField('is_del','1');
+                ->update(['is_del'=>'1']);
 
             return $this->resSuccess([], '删除成功');
 
